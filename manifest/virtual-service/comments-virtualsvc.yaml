@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: comment-service-api
+spec:
+  hosts:
+  - "posts.com"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        regex: /posts/?(.*)/comments
+    route:
+    - destination:
+        host: comments-srv.postsapp.svc.cluster.local 
+        port:
+          number: 4001
+
+          

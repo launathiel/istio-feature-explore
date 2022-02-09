@@ -1,0 +1,70 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-postsapp
+spec:
+  hosts: # define domain here
+  - "posts.com"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: client-srv.postsapp.svc.cluster.local
+        port:
+          number: 3000
+        subset: client-v1
+      weight: 0
+    - destination:
+        host: client-srv.postsapp.svc.cluster.local
+        port:
+          number: 3000
+        subset: client-v2
+      weight: 90
+    - destination:
+        host: client-srv.postsapp.svc.cluster.local
+        port:
+          number: 3000
+        subset: client-v3
+      weight: 10
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: comment-service-api
+spec:
+  hosts: # define domain here
+  - "posts.com"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        regex: /posts/?(.*)/comments
+    route:
+    - destination:
+        host: comments-srv.postsapp.svc.cluster.local #nama service cluster IP
+        port:
+          number: 4001
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: post-service-api
+spec:
+  hosts: # define domain here
+  - "posts.com"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /posts
+    route:
+    - destination:
+        host: posts-clusterip-srv.postsapp.svc.cluster.local #nama service cluster IP
+        port:
+          number: 4000

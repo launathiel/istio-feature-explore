@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: post-service-api
+spec:
+  hosts:
+  - "posts.com"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /posts
+    route:
+    - destination:
+        host: posts-clusterip-srv.postsapp.svc.cluster.local
+        port:
+          number: 4000

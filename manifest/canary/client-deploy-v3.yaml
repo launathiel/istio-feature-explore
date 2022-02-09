@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-v3
+  labels:
+    app: client
+    version: v3.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+      version: v3.0
+  template:
+    metadata:
+      labels:
+        app: client
+        version: v3.0
+    spec:
+      containers:
+        - name: client
+          image: gcr.io/static-smoke-340703/frontend:3.0
+          env:
+          - name: REACT_APP_NODE_ENV
+            value: 'Kubernetes Environment'
+          - name: REACT_APP_POST_BASE_URL
+            value: 'https://posts.com'
+          - name: REACT_APP_COMMENT_BASE_URL
+            value: 'https://posts.com'
