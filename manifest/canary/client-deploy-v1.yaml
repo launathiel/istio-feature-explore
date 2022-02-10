@@ -24,6 +24,6 @@ spec:
           - name: REACT_APP_NODE_ENV
             value: 'Kubernetes Environment'
           - name: REACT_APP_POST_BASE_URL
-            value: 'https://posts.com'
+            value: 'https://posts.launathiel.com'
           - name: REACT_APP_COMMENT_BASE_URL
-            value: 'https://posts.com'
+            value: 'https://posts.launathiel.com'

@@ -4,7 +4,7 @@ metadata:
   name: frontend-postsapp
 spec:
   hosts: # define domain here
-  - "posts.com"
+  - "posts.launathiel.com"
   gateways:
   - app-gateway
   http:
@@ -37,7 +37,7 @@ metadata:
   name: comment-service-api
 spec:
   hosts: # define domain here
-  - "posts.com"
+  - "posts.launathiel.com"
   gateways:
   - app-gateway
   http:
@@ -56,7 +56,7 @@ metadata:
   name: post-service-api
 spec:
   hosts: # define domain here
-  - "posts.com"
+  - "posts.launathiel.com"
   gateways:
   - app-gateway
   http:
