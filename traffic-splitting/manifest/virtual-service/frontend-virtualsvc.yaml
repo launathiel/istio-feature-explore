@@ -28,5 +28,5 @@ spec:
         host: client-srv.postsapp.svc.cluster.local
         port:
           number: 3000
-        subset: client-v3
+        subset: client-nuxt-v1
       weight: 20
