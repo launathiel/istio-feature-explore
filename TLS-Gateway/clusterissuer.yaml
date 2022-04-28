@@ -10,6 +10,9 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod-cluster
     solvers:
+    - dns01:
+        cloudDNS:
+          project: static-smoke-340703
     - http01:
         ingress:
           class: istio

@@ -1,0 +1,56 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: wordpress-vs
+spec:
+  hosts: # define domain here
+  - "pepago.my.id"
+  gateways:
+  - pepagomyid-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: wordpress-service.wordpress.svc.cluster.local #nama service cluster IP
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nginx-vs
+spec:
+  hosts: # define domain here
+  - "api.pepago.my.id"
+  gateways:
+  - pepagomyid-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: deploy-two-clusterip.netdev.svc.cluster.local #nama service cluster IP
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+spec:
+  hosts: # define domain here
+  - "kiali.pepago.my.id"
+  gateways:
+  - pepagomyid-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local #nama service cluster IP
+        port:
+          number: 20001
