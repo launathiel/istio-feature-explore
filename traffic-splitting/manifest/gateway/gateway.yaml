@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: app-gateway
+  name: pepagomyid-gateway
 spec:
   selector:
     istio: ingressgateway
@@ -12,6 +12,16 @@ spec:
       protocol: HTTPs
     tls: 
       mode: SIMPLE
-      credentialName: launathiel-domain-cert-prod
+      credentialName: pepagomyid-domain-cert-prod
     hosts:
-    - "posts.launathiel.com"
+    - "*.pepago.my.id"
+    - "pepago.my.id"
+  - port:
+      name: http-redirect
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+    hosts:
+    - "*.pepago.my.id"
+    - "pepago.my.id"
