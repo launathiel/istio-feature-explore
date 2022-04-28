@@ -11,6 +11,6 @@ spec:
   - name: client-v2
     labels:
       version: v2.0
-  - name: client-v3
+  - name: client-nuxt-v1
     labels:
-      version: v3.0
+      version: nuxt-1.0
