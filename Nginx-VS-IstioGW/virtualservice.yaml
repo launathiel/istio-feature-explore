@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: istio-scenario
+  namespace: istio-scenario
+spec:
+  hosts:
+  - "stg-ticket.istio-scenario.svc.caps.adaptivenetworklab.local"
+  gateways:
+  - istio-system/research-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api/ticket/
+    route:
+    - destination:
+        host: stg-ticket
+        port:
+          number: 9002

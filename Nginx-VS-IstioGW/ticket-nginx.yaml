@@ -1,0 +1,122 @@
+######################
+## TICKET SERVCICE ##
+#####################
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: nginx-scenario
+  name: stg-mongo-ticket-secret
+type: Opaque
+data:
+  user: dGlja2V0ZGI= #ticketdb
+  password: bmF0aGFuMTIz #nathan123
+  kafka_auth: a2Fma2FuaWhib3M= #kafkanihbos
+  internal_auth: MGNIRUI3YVNiM1FkNk1RWnpOWjFYMGw3bzdCSXliM1I= #0cHEB7aSb3Qd6MQZzNZ1X0l7o7BIyb3R
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: nginx-scenario
+  name: stg-ticket-configmap
+data:
+  MONGO_ROOT_USERNAME: 'root'
+  DB_HOST: 'localhost'
+  DB_NAME: 'ticketTest'
+  SECRET: 'thisisasecret'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nginx-scenario
+  name: stg-ticket
+  labels:
+    app: nginx-ticket-scenario
+    service: stg-ticket
+spec:
+  ports:
+  - port: 9001
+    targetPort: 3001
+    name: http
+  selector:
+    app: nginx-ticket-scenario
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: nginx-scenario
+  name: stg-ticket
+  labels:
+    account: stg-ticket
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nginx-scenario
+  name: stg-ticket
+  labels:
+    service_type: backend
+    service_name: ticket
+    app: nginx-ticket-scenario
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ticket-scenario
+  template:
+    metadata:
+      labels:
+        service_type: backend
+        service_name: ticket
+        app: nginx-ticket-scenario
+    spec:
+      serviceAccountName: stg-ticket
+      containers:
+      - name: stg-ticket-service
+        image: harbor.capstone.adaptivenetworklab.org/capstone/ticket:d96424f
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        env:
+        - name: PORT
+          value: "3001"
+        - name: SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: stg-ticket-configmap
+              key: SECRET
+        ## MONGO DB ENVIRONMENT
+        - name: MONGO_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-ticket-secret
+              key: user
+        - name: MONGO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-ticket-secret
+              key: password
+        - name: KAFKA_AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-ticket-secret
+              key: kafka_auth
+        - name: INTERNAL_AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-ticket-secret
+              key: internal_auth
+        - name: DB_HOST
+          value: stg-mongo-ticket-service.staging.svc.caps.adaptivenetworklab.local
+        - name: DB_NAME
+          value: ticketstg
+      imagePullSecrets:
+      - name: harbor-registry-secret

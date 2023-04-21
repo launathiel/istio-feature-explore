@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: research-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: false
+    hosts:
+    - "stg-ticket.istio-scenario.svc.caps.adaptivenetworklab.local"
