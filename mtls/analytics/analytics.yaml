@@ -1,0 +1,84 @@
+########################
+## ANALYTICS SERVICE ##
+#######################
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: tubes-kpk
+  name: analytics
+  labels:
+    app: stg-analytics
+    service: stg-analytics
+spec:
+  ports:
+  - port: 3004
+    name: http
+  selector:
+    app: stg-analytics
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: tubes-kpk
+  name: stg-analytics
+  labels:
+    account: stg-analytics
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: tubes-kpk
+  name: stg-analytics
+  labels:
+    service_type: backend
+    service_name: analytics
+    app: stg-analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stg-analytics
+  template:
+    metadata:
+      labels:
+        service_type: backend
+        service_name: analytics
+        app: stg-analytics
+    spec:
+      serviceAccountName: stg-analytics
+      containers:
+      - name: stg-analytics-service
+        image: harbor.capstone.adaptivenetworklab.org/capstone/analytics:e311687
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3004
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        env:
+        - name: PORT
+          value: "3004"
+        - name: SECRET
+          valueFrom:
+            secretKeyRef:
+              name: stg-analytics-secret
+              key: secret
+        - name: INTERNAL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: stg-analytics-secret
+              key: internal_auth
+        - name: MEMBER_SERVICE_ROOT_URL
+          value: http://member.tubes-kpk.svc.caps.adaptivenetworklab.local:3000
+        - name: TICKET_SERVICE_ROOT_URL
+          value: http://stg-ticket.staging.svc.caps.adaptivenetworklab.local:3001
+        - name: PERFORMANCE_SERVICE_ROOT_URL
+          value: http://stg-performance.staging.svc.caps.adaptivenetworklab.local:3002
+      imagePullSecrets:
+      - name: harbor-registry-secret

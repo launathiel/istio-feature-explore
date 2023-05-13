@@ -1,0 +1,93 @@
+######################
+# CUSTOMER SERVCICE #
+#####################
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: tubes-kpk
+  name: member
+  labels:
+    app: stg-member
+    service: stg-member
+spec:
+  ports:
+  - port: 3000
+    name: http
+  selector:
+    app: stg-member
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: tubes-kpk
+  name: stg-member
+  labels:
+    account: stg-member
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: tubes-kpk
+  name: stg-member
+  labels:
+    service_type: backend
+    service_name: member
+    app: stg-member
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stg-member
+  template:
+    metadata:
+      labels:
+        service_type: backend
+        service_name: member
+        app: stg-member
+    spec:
+      serviceAccountName: stg-member
+      containers:
+      - name: stg-member-service
+        image: harbor.capstone.adaptivenetworklab.org/capstone/member:6bd12b7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        env:
+        - name: PORT
+          value: "3000"
+        - name: SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: stg-member-configmap
+              key: SECRET
+        ## MONGO DB ENVIRONMENT
+        - name: MONGO_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-member-secret
+              key: user
+        - name: MONGO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-member-secret
+              key: password
+        - name: INTERNAL_AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: stg-mongo-member-secret
+              key: internal_auth
+        - name: DB_HOST
+          value: stg-mongo-member-service.staging.svc.caps.adaptivenetworklab.local
+        - name: DB_NAME
+          value: memberstg
+      imagePullSecrets:
+      - name: harbor-registry-secret

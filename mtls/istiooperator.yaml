@@ -1,0 +1,27 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: tubes-kpk
+spec:
+  profile: default
+  meshConfig:
+    accessLogFile: /dev/stdout
+  components:
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        label:
+          istio: ingressgateway
+          app: istio-ingressgateway
+        k8s:
+          resources:
+            requests:
+              cpu: "0.5"
+              memory: 1Gi
+            limits:
+              cpu: "0.5"
+              memory: 1Gi
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: false

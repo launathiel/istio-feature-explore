@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: tubes-kpk
+  name: stg-member-configmap
+data:
+  MONGO_ROOT_USERNAME: 'root'
+  DB_HOST: 'localhost'
+  DB_NAME: 'memberTest'
+  SECRET: 'thisisasecret'

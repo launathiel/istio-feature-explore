@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: tubes-kpk
+  namespace: tubes-kpk
+spec:
+  hosts:
+  - "tubes.kpk.adaptivenetlab.local"
+  gateways:
+  - istio-system/tubes-kpk-gw
+  http:
+  - match:
+    - uri:
+        prefix: /api/analytics/
+    route:
+    - destination:
+        host: analytics
+        port:
+          number: 3004
+  - match:
+    - uri:
+        prefix: /api/member/
+    route:
+    - destination:
+        host: member
+        port:
+          number: 3000
